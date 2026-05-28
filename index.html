@@ -11,9 +11,9 @@
       font-family: Arial, sans-serif;
       background: #0b0f14;
       color: #e6e6e6;
+      overflow: hidden;
     }
 
-    /* TOP BAR */
     .topbar {
       padding: 14px;
       background: #111823;
@@ -23,7 +23,6 @@
       color: #7CFF6B;
     }
 
-    /* LOGIN */
     .login {
       padding: 20px;
       display: flex;
@@ -49,7 +48,6 @@
       cursor: pointer;
     }
 
-    /* MAIN */
     .container {
       display: none;
       padding: 15px;
@@ -83,7 +81,6 @@
       color: #000;
     }
 
-    /* PLAYER CARD */
     .card {
       background: #121a26;
       padding: 12px;
@@ -105,6 +102,27 @@
       font-size: 12px;
       opacity: 0.8;
     }
+
+    /* 🔥 МЕМЫ (новое) */
+    .meme {
+      position: fixed;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111823;
+      color: #7CFF6B;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      animation: floatUp 3s ease forwards;
+      box-shadow: 0 0 15px rgba(124,255,107,0.2);
+    }
+
+    @keyframes floatUp {
+      0% { bottom: -50px; opacity: 0; }
+      20% { opacity: 1; }
+      100% { bottom: 80px; opacity: 0; }
+    }
   </style>
 </head>
 
@@ -112,14 +130,12 @@
 
   <div class="topbar">RUSHB TEAMFINDER</div>
 
-  <!-- LOGIN -->
   <div class="login" id="loginBox">
     <h3>Войти по нику</h3>
     <input id="nickInput" placeholder="Введите ник..." />
     <button onclick="login()">Войти</button>
   </div>
 
-  <!-- MAIN -->
   <div class="container" id="main">
 
     <div class="banner" id="banner">
@@ -128,7 +144,6 @@
 
     <div class="actions">
       <button class="btn-green" onclick="addMe()">Ищу тиммейтов</button>
-      <button class="btn-dark" onclick="randomMeme()">Мем</button>
     </div>
 
     <div id="list"></div>
@@ -138,11 +153,12 @@
   let userNick = "";
 
   const memes = [
-    "What is your max elo? tell me,tell me",
-    "Why you bully me?",
-    "This is not FPL,this is a major!",
+    "Rush B no stop!",
     "It's Jame time!",
-    "Rush b suka blyat!"
+    "Why you bully me?",
+    "This is not FACEIT, this is war!",
+    "CYKA BLYAT MOMENT",
+    "1v5? easy"
   ];
 
   const players = [];
@@ -154,14 +170,15 @@
     userNick = nick;
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("main").style.display = "block";
+
+    startMemeSystem(); // 🔥 запускаем мемы после входа
   }
 
   function addMe() {
     players.push({
       nick: userNick,
       role: "RIFLER",
-      rank: "FACEIT 8",
-      kd: (Math.random() * 1.5 + 0.5).toFixed(2)
+      rank: "FACEIT 8"
     });
 
     render();
@@ -176,15 +193,30 @@
         <div class="card">
           <div class="role">${p.role}</div>
           <div class="nick">${p.nick}</div>
-          <div class="meta">Rank: ${p.rank} | K/D: ${p.kd}</div>
+          <div class="meta">Rank: ${p.rank}</div>
         </div>
       `;
     });
   }
 
-  function randomMeme() {
-    document.getElementById("banner").innerText =
-      memes[Math.floor(Math.random() * memes.length)];
+  function spawnMeme() {
+    const meme = document.createElement("div");
+    meme.className = "meme";
+    meme.innerText = memes[Math.floor(Math.random() * memes.length)];
+
+    document.body.appendChild(meme);
+
+    setTimeout(() => {
+      meme.remove();
+    }, 3000);
+  }
+
+  function startMemeSystem() {
+    spawnMeme(); // первый сразу
+
+    setInterval(() => {
+      spawnMeme();
+    }, 4000);
   }
 </script>
 
