@@ -97,7 +97,7 @@
       opacity: 0.8;
     }
 
-    /* 💬 MEMES */
+    /* MEMES */
     .meme {
       position: fixed;
       left: 50%;
@@ -108,70 +108,50 @@
       padding: 10px 15px;
       border-radius: 10px;
       font-weight: bold;
-      box-shadow: 0 0 15px rgba(124,255,107,0.2);
       animation: floatUp 4s ease forwards;
       z-index: 999;
     }
 
     @keyframes floatUp {
-      0% {
-        bottom: -80px;
-        opacity: 0;
-      }
-      15% {
-        opacity: 1;
-      }
-      100% {
-        bottom: 100%;
-        opacity: 0;
-      }
+      0% { bottom: -80px; opacity: 0; }
+      15% { opacity: 1; }
+      100% { bottom: 100%; opacity: 0; }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="topbar">RUSHB TEAMFINDER</div>
+<div class="topbar">RUSHB TEAMFINDER</div>
 
-  <!-- LOGIN -->
-  <div class="login" id="loginBox">
-    <h3>Войти по нику</h3>
+<div class="login" id="loginBox">
 
-    <input id="nickInput" placeholder="Введите ник..." />
+  <h3>Войти по нику</h3>
 
-    <select id="rankType">
-      <option value="premier">Premier (CS2)</option>
-      <option value="faceit">FACEIT</option>
-      <option value="mm">MM (звания)</option>
-    </select>
+  <input id="nickInput" placeholder="Введите ник..." />
 
-    <select id="rankValue">
-      <option>Silver I</option>
-      <option>Silver II</option>
-      <option>Silver III</option>
-      <option>Gold Nova I</option>
-      <option>Gold Nova IV</option>
-      <option>Master Guardian</option>
-      <option>DMG</option>
-      <option>Global Elite</option>
-    </select>
+  <select id="rankType" onchange="updateRankOptions()">
+    <option value="mm">MM (обычные звания)</option>
+    <option value="faceit">FACEIT</option>
+    <option value="premier">Premier</option>
+  </select>
 
-    <button onclick="login()">Войти</button>
+  <select id="rankValue"></select>
+
+  <button onclick="login()">Войти</button>
+
+</div>
+
+<div class="container" id="main">
+
+  <div class="banner">RUSH B NO STOP</div>
+
+  <div class="actions">
+    <button class="btn-green" onclick="addMe()">Ищу тиммейтов</button>
   </div>
 
-  <!-- MAIN -->
-  <div class="container" id="main">
-
-    <div class="banner">
-      RUSH B NO STOP
-    </div>
-
-    <div class="actions">
-      <button class="btn-green" onclick="addMe()">Ищу тиммейтов</button>
-    </div>
-
-    <div id="list"></div>
-  </div>
+  <div id="list"></div>
+</div>
 
 <script>
   let userNick = "";
@@ -179,15 +159,58 @@
   let userRankValue = "";
 
   const memes = [
-    "Rush B no stop",
+    "Rush B no stop!",
     "It's Jame time!",
     "Why you bully me?",
-    "CYKA BLYAT RUSH B NAHUY",
-    "I GO MID EVERY ROUND SUKA",
-    "Two B,four A"
+    "CYKA BLYAT MOMENT",
+    "1v5? EASY",
+    "NO INFO?? GG"
   ];
 
   const players = [];
+
+  function updateRankOptions() {
+    const type = document.getElementById("rankType").value;
+    const select = document.getElementById("rankValue");
+
+    select.innerHTML = "";
+
+    let options = [];
+
+    if (type === "mm") {
+      options = [
+        "Silver I", "Silver II", "Silver III",
+        "Gold Nova I", "Gold Nova II", "Gold Nova III", "Gold Nova IV",
+        "Master Guardian I", "Master Guardian II",
+        "DMG", "LE", "LEM", "Global Elite"
+      ];
+    }
+
+    if (type === "faceit") {
+      for (let i = 1; i <= 10; i++) {
+        options.push("Level " + i);
+      }
+    }
+
+    if (type === "premier") {
+      options = [
+        "0 - 1999",
+        "2000 - 4999",
+        "5000 - 9999",
+        "10000 - 14999",
+        "15000 - 19999",
+        "20000+"
+      ];
+    }
+
+    options.forEach(o => {
+      const opt = document.createElement("option");
+      opt.textContent = o;
+      select.appendChild(opt);
+    });
+  }
+
+  updateRankOptions();
 
   function login() {
     const nick = document.getElementById("nickInput").value;
@@ -207,7 +230,7 @@
     players.push({
       nick: userNick,
       role: "RIFLER",
-      rankType: userRankType,
+      type: userRankType,
       rank: userRankValue
     });
 
@@ -219,21 +242,17 @@
     list.innerHTML = "";
 
     players.forEach(p => {
-      let rankLabel = "";
+      let label = "";
 
-      if (p.rankType === "premier") {
-        rankLabel = "Premier Rank";
-      } else if (p.rankType === "faceit") {
-        rankLabel = "FACEIT Level";
-      } else {
-        rankLabel = "MM Rank";
-      }
+      if (p.type === "mm") label = "MM Rank";
+      if (p.type === "faceit") label = "FACEIT Level";
+      if (p.type === "premier") label = "Premier Rating";
 
       list.innerHTML += `
         <div class="card">
           <div class="role">${p.role}</div>
           <div class="nick">${p.nick}</div>
-          <div class="meta">${rankLabel}: ${p.rank}</div>
+          <div class="meta">${label}: ${p.rank}</div>
         </div>
       `;
     });
@@ -246,9 +265,7 @@
 
     document.body.appendChild(meme);
 
-    setTimeout(() => {
-      meme.remove();
-    }, 4000);
+    setTimeout(() => meme.remove(), 4000);
   }
 
   function startMemeSystem() {
